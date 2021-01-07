@@ -3,6 +3,8 @@
 	<Application>
 		<!-- Name (Required) - [String] The Name of the Application (version number is appended)-->
 		<Name></Name>
+		<!-- DisplayName - [String] The Name of the Application in Software Center -->
+		<DisplayName></DisplayName>
 		<!-- Description - [String] Software Center Description -->
 		<Description></Description>
 		<!-- AdminDescription - [String] Application Administrative Description -->

@@ -526,6 +526,7 @@ Combines the output from Get-ChildItem with the Get-ExtensionAttribute function,
 	
 		## Set Variables
 		$ApplicationName = $Recipe.ApplicationDef.Application.Name
+		$ApplicationDisplayName = $Recipe.ApplicationDef.Application.DisplayName
 		$ApplicationPublisher = $Recipe.ApplicationDef.Application.Publisher
 		$ApplicationDescription = $Recipe.ApplicationDef.Application.Description
 		$ApplicationAdminDescription = $Recipe.ApplicationDef.Application.AdminDescription
@@ -558,10 +559,20 @@ Combines the output from Get-ChildItem with the Get-ExtensionAttribute function,
 
 		# Change the SW Center Display Name based on Setting
 		if ($Global:NoVersionInSWCenter) {
-			$ApplicationDisplayName = "$ApplicationName"
+			$SWCenterName = "$ApplicationName"
+
+			# Use custom name in SW Center
+			if (-not ([System.String]::IsNullOrEmpty($ApplicationDisplayName)))  {
+				$SWCenterName = $ApplicationDisplayName
+			}
 		}
 		else {
-			$ApplicationDisplayName = "$ApplicationName $ApplicationSWVersion"
+			$SWCenterName = "$ApplicationName $ApplicationSWVersion"
+
+			# Use custom name in SW Center
+			if (-not ([System.String]::IsNullOrEmpty($ApplicationDisplayName)))  {
+				$SWCenterName = "$ApplicationDisplayName $ApplicationSWVersion"
+			}
 		}
 
 		Add-LogContent "Building application import command"
@@ -570,7 +581,7 @@ Combines the output from Get-ChildItem with the Get-ExtensionAttribute function,
 		Write-Output $ApplicationDisplayName, $ApplicationPublisher, $ApplicationAutoInstall, $ApplicationDisplaySupersedence, $ApplicationIsFeatured | Out-Null
 
 		# Reference: https://docs.microsoft.com/en-us/powershell/module/configurationmanager/new-cmapplication
-		$NewAppCommand = 'New-CMApplication -Name "$ApplicationName $ApplicationSWVersion" -LocalizedName "$ApplicationDisplayName" -SoftwareVersion "$ApplicationSWVersion" -ReleaseDate "$(Get-Date)" -AutoInstall $ApplicationAutoInstall -DisplaySupersedenceInApplicationCatalog $ApplicationDisplaySupersedence -IsFeatured $ApplicationIsFeatured'
+		$NewAppCommand = 'New-CMApplication -Name "$ApplicationName $ApplicationSWVersion" -LocalizedName "$SWCenterName" -SoftwareVersion "$ApplicationSWVersion" -ReleaseDate "$(Get-Date)" -AutoInstall $ApplicationAutoInstall -DisplaySupersedenceInApplicationCatalog $ApplicationDisplaySupersedence -IsFeatured $ApplicationIsFeatured'
 		$CmdSwitches = ''
 	
 		## Build the rest of the command based on values in the xml
